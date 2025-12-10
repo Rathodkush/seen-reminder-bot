@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seen Reminder Bot - Don't Leave People on Seen!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> Seen Reminder Bot</h1>
+            <p class="subtitle">Never leave important messages on seen. Stay connected. Stay responsible.</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar">
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-view="inbox">
+                        <span class="nav-icon">📥</span>
+                        <span>Inbox</span>
+                        <span class="badge" id="pending-count">0</span>
+                    </button>
+                    <button class="nav-btn" data-view="summary">
+                        <span class="nav-icon">📊</span>
+                        <span>Daily Summary</span>
+                    </button>
+                    <button class="nav-btn" data-view="settings">
+                        <span class="nav-icon">⚙️</span>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-area">
+                <!-- Inbox View -->
+                <div class="view active" id="inbox-view">
+                    <div class="view-header">
+                        <h2>Pending Messages</h2>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-priority="all">All</button>
+                            <button class="filter-btn" data-priority="high">High</button>
+                            <button class="filter-btn" data-priority="medium">Medium</button>
+                            <button class="filter-btn" data-priority="low">Low</button>
+                        </div>
+                    </div>
+                    <div class="messages-list" id="messages-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">💬</div>
+                            <p>No pending messages. Great job staying on top of things!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Summary View -->
+                <div class="view" id="summary-view">
+                    <div class="view-header">
+                        <h2>Daily Summary</h2>
+                        <button class="refresh-btn" id="refresh-summary">🔄 Refresh</button>
+                    </div>
+                    <div class="summary-content" id="summary-content">
+                        <div class="summary-card">
+                            <h3>Today's Statistics</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="total-messages">0</div>
+                                    <div class="stat-label">Total Messages</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="pending-messages">0</div>
+                                    <div class="stat-label">Pending</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="replied-messages">0</div>
+                                    <div class="stat-label">Replied</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="high-priority">0</div>
+                                    <div class="stat-label">High Priority</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Unresponded Conversations</h3>
+                            <div id="summary-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings View -->
+                <div class="view" id="settings-view">
+                    <div class="view-header">
+                        <h2>Settings</h2>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-group">
+                            <label for="reminder-timeout">Reminder Timeout (minutes)</label>
+                            <input type="number" id="reminder-timeout" min="1" max="1440" value="10">
+                            <p class="setting-desc">How long to wait before sending a reminder</p>
+                        </div>
+                        <div class="setting-group">
+                            <label for="auto-priority">Auto-detect Priority</label>
+                            <input type="checkbox" id="auto-priority" checked>
+                            <p class="setting-desc">Automatically detect message priority using AI</p>
+                        </div>
+                        <div class="setting-group">
+                            <label for="daily-reminders">Daily Reminders</label>
+                            <input type="checkbox" id="daily-reminders" checked>
+                            <p class="setting-desc">Receive daily summary of pending messages</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Message Modal -->
+        <div class="modal" id="add-message-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add New Message</h3>
+                    <button class="close-btn" id="close-modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="sender-name">Sender Name</label>
+                        <input type="text" id="sender-name" placeholder="e.g., John, Mom, Boss">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text">Message</label>
+                        <textarea id="message-text" rows="4" placeholder="Enter the message content..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-priority">Priority</label>
+                        <select id="message-priority">
+                            <option value="high">High</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-platform">Platform</label>
+                        <select id="message-platform">
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="messenger">Messenger</option>
+                            <option value="email">Email</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="cancel-add">Cancel</button>
+                    <button class="btn-primary" id="save-message">Add Message</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Detail Modal -->
+        <div class="modal" id="message-detail-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="detail-sender-name">Message Details</h3>
+                    <button class="close-btn" id="close-detail-modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="message-detail-info">
+                        <div class="detail-item">
+                            <span class="detail-label">Message:</span>
+                            <p id="detail-message-text"></p>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Priority:</span>
+                            <span id="detail-priority" class="priority-badge"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Platform:</span>
+                            <span id="detail-platform"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Time Since:</span>
+                            <span id="detail-time"></span>
+                        </div>
+                    </div>
+                    <div class="suggested-replies">
+                        <h4>Suggested Quick Replies</h4>
+                        <div id="reply-suggestions"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="mark-completed">Mark as Completed</button>
+                    <button class="btn-primary" id="reply-now">Reply Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab" id="add-message-btn" title="Add New Message">
+            <span>+</span>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
