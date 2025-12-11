@@ -9,9 +9,7 @@ class SeenAlertChatbot:
         self.last_time = time.time()
         self.stop_timer = False
 
-    # ---------------------------
-    # Background Timer (New Logic)
-    # ---------------------------
+  
     def start_timer(self, waiting_for_user):
         start = time.time()
 
@@ -21,9 +19,7 @@ class SeenAlertChatbot:
                 return
             time.sleep(0.2)
 
-    # ---------------------------------------
-    # Combined Method (Old + New Logic Merge)
-    # ---------------------------------------
+  
     def process_message(self, user, message):
         current_time = time.time()
 
@@ -38,9 +34,7 @@ class SeenAlertChatbot:
         self.last_user = user
         self.last_time = current_time
 
-    # ---------------------------------------------------
-    # NEW LOGIC: Wait for message + background timer
-    # ---------------------------------------------------
+   
     def wait_for_message(self, user):
         self.stop_timer = False
 
